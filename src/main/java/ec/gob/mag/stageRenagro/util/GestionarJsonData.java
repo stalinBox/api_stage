@@ -52,6 +52,7 @@ public class GestionarJsonData {
 		imagesJson.stream().filter(mprImg -> mprImg.getBase64().contains("data:image")).map(mprImgJson -> {
 			ImagesLocalProperties imagesLocalProperties = new ImagesLocalProperties();
 			try {
+				System.out.println("Antes de ingresar al saveImagesTolocal");
 				imagesLocalProperties = storageImageToLocal.saveImagesToLocal(mprImgJson.getBase64(), ciEncuestador,
 						mprImgJson.getVariable());
 			} catch (IOException | NoSuchAlgorithmException e) {

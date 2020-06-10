@@ -30,6 +30,7 @@ public class StorageImageToLocal {
 
 	public ImagesLocalProperties saveImagesToLocal(String base64String, String nameImage, String variable)
 			throws IOException, NoSuchAlgorithmException {
+		System.out.println("ENTRO saveImagesToLocal");
 		ImagesLocalProperties imagesLocalProperties = new ImagesLocalProperties();
 		String[] strings = base64String.split(",");
 		String extension;
