@@ -108,12 +108,12 @@ public class StageMovilController implements Serializable, ErrorController {
 		String paramImg2 = getValueKeyJsonObject.checkKey(JsonData, "varImage2").toString();
 		String paramImg3 = getValueKeyJsonObject.checkKey(JsonData, "varImage3").toString();
 		String paramDNI = getValueKeyJsonObject.checkKey(JsonData, "dni").toString();
+		String id = getValueKeyJsonObject.checkKey(JsonData, "id").toString();
 
 		System.out.println("DNI: " + paramDNI);
 		System.out.println("im1: " + paramImg1);
 		System.out.println("im2: " + paramImg2);
 		System.out.println("im3: " + paramImg3);
-//		System.out.println("JsonData: " + jsonData);
 		JSONObject dataJson = gestionarJsonData.gestionarJsonData(paramJsonData, paramImg1, paramImg2, paramImg3,
 				paramDNI);
 
@@ -126,6 +126,7 @@ public class StageMovilController implements Serializable, ErrorController {
 		JsonData.remove("varImage2");
 		JsonData.remove("varImage3");
 		JsonData.remove("dni");
+		JsonData.put("staIdMovil", id);
 
 		pathMicro = null;
 		pathMicro = urlServidor + urlMicroRenagro + "stage/create/";
