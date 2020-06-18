@@ -32,6 +32,7 @@ import ec.gob.mag.stageRenagro.dto.IntegranteBrigadaDTO;
 import ec.gob.mag.stageRenagro.dto.PerfilDTO;
 import ec.gob.mag.stageRenagro.dto.PersonaDTO;
 import ec.gob.mag.stageRenagro.dto.ResponseDTO;
+import ec.gob.mag.stageRenagro.dto.ResponseSaveRenagroDTO;
 import ec.gob.mag.stageRenagro.dto.SectorDispersoDTO;
 import ec.gob.mag.stageRenagro.dto.SectorDispersoPeriodoDTO;
 import ec.gob.mag.stageRenagro.dto.UsuarioDTO;
@@ -82,8 +83,14 @@ public class StageMovilController implements Serializable, ErrorController {
 	@Value("${url.servidor_micro}")
 	private String urlServidor;
 
+	@Value("${url.renagroProcesamiento}")
+	private String urlProcesamiento;
+
 	@Value("${url.renagro}")
 	private String urlMicroRenagro;
+
+	@Value("${url.stageRenagro}")
+	private String urlMicroStageRenagro;
 
 	@Value("${url.persona}")
 	private String urlMicroPersona;
@@ -129,9 +136,17 @@ public class StageMovilController implements Serializable, ErrorController {
 		JsonData.put("staIdMovil", id);
 
 		pathMicro = null;
-		pathMicro = urlServidor + urlMicroRenagro + "stage/create/";
+		pathMicro = urlServidor + urlMicroStageRenagro + "stage/create/";
 		System.out.println("URL: " + pathMicro);
-		return consumer.doPost(pathMicro, JsonData.toString(), token);
+		ResponseSaveRenagroDTO responseDTO = convertEntityUtil.ConvertSingleEntityPOST(pathMicro, JsonData.toString(),
+				token, ResponseSaveRenagroDTO.class);
+		pathMicro = null;
+		pathMicro = urlProcesamiento + "renagroprocesadatosmovil/procesaDatosMovil/" + responseDTO.getId();
+		System.out.println("--> " + pathMicro);
+
+		// ENVIAR AL BACKGROUND PHP
+		consumer.doGet(pathMicro, "");
+		return responseDTO;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -149,11 +164,11 @@ public class StageMovilController implements Serializable, ErrorController {
 		// ----------------
 		pathMicro = null;
 		pathMicro = urlServidor + urlMicroPersona + "persona/findById/" + perId;
-		PersonaDTO personaDTO = convertEntityUtil.ConvertSingleEntity(pathMicro, auth, PersonaDTO.class);
+		PersonaDTO personaDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicro, auth, PersonaDTO.class);
 		// ----------------
 		pathMicro = null;
 		pathMicro = urlServidor + urlMicroSeguridades + "api/usuarioPersona/findByPerId/" + perId;
-		UsuarioPersonaDTO usuarioPersonaDTO = convertEntityUtil.ConvertSingleEntity(pathMicro, auth,
+		UsuarioPersonaDTO usuarioPersonaDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicro, auth,
 				UsuarioPersonaDTO.class);
 		// ----------------
 		pathMicro = null;
@@ -165,12 +180,12 @@ public class StageMovilController implements Serializable, ErrorController {
 		pathMicro = null;
 		pathMicro = urlServidor + urlMicroSeguridades + "usuarioperfil/findByUsupId/" + usuarioDTO.get(0).getId() + "/"
 				+ apliId;
-		UsuarioPerfilDTO usuarioPerfilDTO = convertEntityUtil.ConvertSingleEntity(pathMicro, auth,
+		UsuarioPerfilDTO usuarioPerfilDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicro, auth,
 				UsuarioPerfilDTO.class);
 		// ----------------Aqui pruebas
 		pathMicro = null;
 		pathMicro = urlServidor + urlMicroSeguridades + "perfil/findById/" + usuarioPerfilDTO.getPefId();
-		PerfilDTO perfilDTO = convertEntityUtil.ConvertSingleEntity(pathMicro, auth, PerfilDTO.class);
+		PerfilDTO perfilDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicro, auth, PerfilDTO.class);
 
 		/**
 		 * **********************************************************************
@@ -183,7 +198,7 @@ public class StageMovilController implements Serializable, ErrorController {
 		// ----------------
 		pathMicro = null;
 		pathMicro = urlServidor + urlMicroRenagro + "brigada/findById/" + integranteBrigadaDTO.get(0).getBriId();
-		BrigadaDTO brigadaDTO = convertEntityUtil.ConvertSingleEntity(pathMicro, auth, BrigadaDTO.class);
+		BrigadaDTO brigadaDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicro, auth, BrigadaDTO.class);
 		// ---------------
 		pathMicro = null;
 		pathMicro = urlServidor + urlMicroRenagro + "brigadaSector/findByBriId/"
@@ -196,13 +211,13 @@ public class StageMovilController implements Serializable, ErrorController {
 				// ---------------
 				pathMicro = null;
 				pathMicro = urlServidor + urlMicroRenagro + "sectorDispersoPeriodo/findById/" + mpr.getSedpId();
-				SectorDispersoPeriodoDTO sectorDispersoPeriodoDTO = convertEntityUtil.ConvertSingleEntity(pathMicro,
+				SectorDispersoPeriodoDTO sectorDispersoPeriodoDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicro,
 						auth, SectorDispersoPeriodoDTO.class);
 				// ---------------
 				pathMicro = null;
 				pathMicro = urlServidor + urlMicroRenagro + "sectordisperso/findBySecdId/"
 						+ sectorDispersoPeriodoDTO.getSecdId();
-				sectorDispersoDTO = convertEntityUtil.ConvertSingleEntity(pathMicro, auth, SectorDispersoDTO.class);
+				sectorDispersoDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicro, auth, SectorDispersoDTO.class);
 				sectorDispersoDTO.setSecdpId(Long.parseLong(mpr.getSedpId().toString()));
 			} catch (IOException | NoSuchFieldException | SecurityException | IllegalArgumentException
 					| IllegalAccessException e) {

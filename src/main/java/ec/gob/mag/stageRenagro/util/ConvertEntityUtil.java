@@ -17,13 +17,25 @@ public class ConvertEntityUtil {
 	@Qualifier("consumer")
 	private Consumer consumer;
 
-	public <T> T ConvertSingleEntity(String pathMicro, String auth, Class<T> clazz) throws IOException,
+	public <T> T ConvertSingleEntityGET(String pathMicro, String auth, Class<T> clazz) throws IOException,
 			NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		String jsonString = null;
 		ObjectMapper mprObjecto = new ObjectMapper();
 		mprObjecto.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		System.out.println("URL VALUE: " + pathMicro);
+		System.out.println("URL VALUE GET: " + pathMicro);
 		Object responseEntity = consumer.doGet(pathMicro, auth);
+		jsonString = mprObjecto.writeValueAsString(responseEntity);
+		return mprObjecto.readValue(jsonString, clazz);
+	}
+
+	public <T> T ConvertSingleEntityPOST(String pathMicro, String sendData, String auth, Class<T> clazz)
+			throws IOException, NoSuchFieldException, SecurityException, IllegalArgumentException,
+			IllegalAccessException {
+		String jsonString = null;
+		ObjectMapper mprObjecto = new ObjectMapper();
+		mprObjecto.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		System.out.println("URL VALUE POST: " + pathMicro);
+		Object responseEntity = consumer.doPost(pathMicro, sendData, auth);
 		jsonString = mprObjecto.writeValueAsString(responseEntity);
 		return mprObjecto.readValue(jsonString, clazz);
 	}
