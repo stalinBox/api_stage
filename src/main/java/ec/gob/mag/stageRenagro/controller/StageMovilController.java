@@ -103,6 +103,7 @@ public class StageMovilController implements Serializable, ErrorController {
 	 */
 	private String pathMicro;
 
+	@SuppressWarnings("finally")
 	@RequestMapping(value = "/saveData/", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = {
 			"application/json; charset=utf-8" }, method = RequestMethod.POST)
 	@ApiOperation(value = "Guardar los datos del movil de renagro", response = String.class)
@@ -145,8 +146,13 @@ public class StageMovilController implements Serializable, ErrorController {
 		System.out.println("--> " + pathMicro);
 
 		// ENVIAR AL BACKGROUND PHP
-		consumer.doGet(pathMicro, "");
-		return responseDTO;
+		try {
+			consumer.doGet(pathMicro, "");
+		} finally {
+			// TODO: handle finally clause
+			return responseDTO;
+		}
+
 	}
 
 	@SuppressWarnings("unchecked")
