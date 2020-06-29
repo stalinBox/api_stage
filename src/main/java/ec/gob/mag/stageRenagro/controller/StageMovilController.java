@@ -6,8 +6,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +13,7 @@ import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -98,10 +97,22 @@ public class StageMovilController implements Serializable, ErrorController {
 	@Value("${url.seguridades}")
 	private String urlMicroSeguridades;
 
+	@Value("${url.ubicacion}")
+	private String urlMicroUbicacion;
+
 	/**
 	 * VARIABLE PRIVADA PARA SETTEAR EL PATH
 	 */
 	private String pathMicro;
+
+	@RequestMapping(value = "/findAllUbicacionesEcuador/", method = RequestMethod.GET)
+	@ApiOperation(value = "Guardar los datos del movil de renagro", response = String.class)
+	public Object getUbicacion(@RequestHeader(name = "Authorization") String token) {
+		pathMicro = urlServidor + urlMicroUbicacion + "api/ubicacion/findAllUbicacionesEcuador";
+		System.out.println("--> " + pathMicro);
+		Object responseUbicacion = consumer.doGet(pathMicro, token);
+		return responseUbicacion;
+	}
 
 	@SuppressWarnings("finally")
 	@RequestMapping(value = "/saveData/", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = {
@@ -159,7 +170,7 @@ public class StageMovilController implements Serializable, ErrorController {
 	@RequestMapping(value = "/getData/{perId}/{apliId}", method = RequestMethod.GET)
 	@ApiOperation(value = "Busca todas los registros activos de la tabla appmovil", response = Object.class)
 	@ResponseStatus(HttpStatus.OK)
-	public ResponseEntity<?> getDataMovil(@Valid @PathVariable Long perId, @PathVariable Long apliId,
+	public ResponseEntity<?> getDataMovil(@Validated @PathVariable Long perId, @PathVariable Long apliId,
 			@RequestHeader(name = "Authorization") String auth) throws JsonParseException, JsonMappingException,
 			IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		ResponseDTO responseDTO = new ResponseDTO();
