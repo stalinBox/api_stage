@@ -22,7 +22,7 @@ public class ConvertEntityUtil {
 		String jsonString = null;
 		ObjectMapper mprObjecto = new ObjectMapper();
 		mprObjecto.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		System.out.println("URL VALUE GET: " + pathMicro);
+		System.out.println("URL GET: " + pathMicro);
 		Object responseEntity = consumer.doGet(pathMicro, auth);
 		jsonString = mprObjecto.writeValueAsString(responseEntity);
 		return mprObjecto.readValue(jsonString, clazz);
@@ -34,7 +34,7 @@ public class ConvertEntityUtil {
 		String jsonString = null;
 		ObjectMapper mprObjecto = new ObjectMapper();
 		mprObjecto.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		System.out.println("URL VALUE POST: " + pathMicro);
+		System.out.println("URL POST: " + pathMicro);
 		Object responseEntity = consumer.doPost(pathMicro, sendData, auth);
 		jsonString = mprObjecto.writeValueAsString(responseEntity);
 		return mprObjecto.readValue(jsonString, clazz);
@@ -45,7 +45,7 @@ public class ConvertEntityUtil {
 		String jsonString = null;
 		ObjectMapper mprObjecto = new ObjectMapper();
 		mprObjecto.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		System.out.println("URL VALUE: " + pathMicro);
+		System.out.println("URL GET: " + pathMicro);
 		Object responseEntity = consumer.doGet(pathMicro, auth);
 		jsonString = mprObjecto.writeValueAsString(responseEntity);
 		return mprObjecto.readValue(jsonString, mprObjecto.getTypeFactory().constructCollectionType(List.class, clazz));

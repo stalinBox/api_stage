@@ -22,11 +22,8 @@ public class GetResourcesPath {
 	}
 
 	public String createTempFile(String pathFolderImages) throws IOException {
-		System.out.println("PASO 2- CREATE TEMFILE------------");
 		Path path = Files.createTempDirectory("renagro-stage");
 		File file = path.toFile();
-//		file.deleteOnExit();
-		System.out.println("PASO 3 - FIN -------------");
 		return file.getAbsolutePath() + "/";
 	}
 }

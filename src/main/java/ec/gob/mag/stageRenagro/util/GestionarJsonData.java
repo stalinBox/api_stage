@@ -43,16 +43,15 @@ public class GestionarJsonData {
 		imagesJson.add(new ImagesJson(JsonData.getJSONObject("formA").get(paramImage1).toString(), paramImage1));
 		imagesJson.add(new ImagesJson(JsonData.getJSONObject("formA").get(paramImage2).toString(), paramImage2));
 		imagesJson.add(new ImagesJson(JsonData.getJSONObject("formC").get(paramImage3).toString(), paramImage3));
-		for (ImagesJson i : imagesJson) {
-			System.out.println("---------------------------------------");
-			System.out.println("Variable: " + i.getVariable());
-			System.out.println("base64Image: " + i.getBase64());
-		}
+//		for (ImagesJson i : imagesJson) {
+//			System.out.println("---------------------------------------");
+//			System.out.println("Variable: " + i.getVariable());
+//			System.out.println("base64Image: " + i.getBase64());
+//		}
 
 		imagesJson.stream().filter(mprImg -> mprImg.getBase64().contains("data:image")).map(mprImgJson -> {
 			ImagesLocalProperties imagesLocalProperties = new ImagesLocalProperties();
 			try {
-				System.out.println("Antes de ingresar al saveImagesTolocal");
 				imagesLocalProperties = storageImageToLocal.saveImagesToLocal(mprImgJson.getBase64(), ciEncuestador,
 						mprImgJson.getVariable());
 			} catch (IOException | NoSuchAlgorithmException e) {

@@ -2,7 +2,6 @@ package ec.gob.mag.stageRenagro.controller;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -115,12 +113,12 @@ public class StageMovilController implements Serializable, ErrorController {
 	}
 
 	@SuppressWarnings("finally")
-	@RequestMapping(value = "/saveData/", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = {
-			"application/json; charset=utf-8" }, method = RequestMethod.POST)
+	@RequestMapping(value = "/saveData/", produces = { "application/json; charset=utf-8" }, method = RequestMethod.POST)
 	@ApiOperation(value = "Guardar los datos del movil de renagro", response = String.class)
 	public Object SaveDataMovil(@RequestBody String data, @RequestHeader(name = "Authorization") String token)
 			throws Throwable {
 		JSONObject JsonData = new JSONObject(data);
+
 		String jsonData = getValueKeyJsonObject.checkKey(JsonData, "staBoleta").toString();
 		JSONObject paramJsonData = new JSONObject(jsonData);
 		String paramImg1 = getValueKeyJsonObject.checkKey(JsonData, "varImage1").toString();
@@ -129,22 +127,19 @@ public class StageMovilController implements Serializable, ErrorController {
 		String paramDNI = getValueKeyJsonObject.checkKey(JsonData, "dni").toString();
 		String id = getValueKeyJsonObject.checkKey(JsonData, "id").toString();
 
-		System.out.println("DNI: " + paramDNI);
-		System.out.println("im1: " + paramImg1);
-		System.out.println("im2: " + paramImg2);
-		System.out.println("im3: " + paramImg3);
 		JSONObject dataJson = gestionarJsonData.gestionarJsonData(paramJsonData, paramImg1, paramImg2, paramImg3,
 				paramDNI);
 
-		byte[] b = dataJson.toString().getBytes(StandardCharsets.UTF_8);
-		String s = new String(b, StandardCharsets.US_ASCII);
-
 		JsonData.remove("staBoleta");
-		JsonData.put("staBoleta", s);
+		JsonData.put("staBoleta", dataJson.toString());
+		JsonData.put("staFechInicio", getValueKeyJsonObject.checkKey(JsonData, "fechaInicio").toString());
+		JsonData.put("staFechFin", getValueKeyJsonObject.checkKey(JsonData, "fechaFin").toString());
 		JsonData.remove("varImage1");
 		JsonData.remove("varImage2");
 		JsonData.remove("varImage3");
 		JsonData.remove("dni");
+		JsonData.remove("fechaInicio");
+		JsonData.remove("fechaFin");
 		JsonData.put("staIdMovil", id);
 
 		pathMicro = null;
@@ -152,6 +147,7 @@ public class StageMovilController implements Serializable, ErrorController {
 		System.out.println("URL: " + pathMicro);
 		ResponseSaveRenagroDTO responseDTO = convertEntityUtil.ConvertSingleEntityPOST(pathMicro, JsonData.toString(),
 				token, ResponseSaveRenagroDTO.class);
+
 		pathMicro = null;
 		pathMicro = urlProcesamiento + "renagroprocesadatosmovil/procesaDatosMovil/" + responseDTO.getId();
 		System.out.println("--> " + pathMicro);

@@ -5,10 +5,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.math.BigInteger;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
+import java.util.UUID;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -30,7 +28,6 @@ public class StorageImageToLocal {
 
 	public ImagesLocalProperties saveImagesToLocal(String base64String, String nameImage, String variable)
 			throws IOException, NoSuchAlgorithmException {
-		System.out.println("ENTRO saveImagesToLocal");
 		ImagesLocalProperties imagesLocalProperties = new ImagesLocalProperties();
 		String[] strings = base64String.split(",");
 		String extension;
@@ -53,9 +50,7 @@ public class StorageImageToLocal {
 			}
 			byte[] data = DatatypeConverter.parseBase64Binary(strings[1]);
 			String realNameImage = nameImage + "_" + generateRestoNameImage() + "." + extension;
-			System.out.println("PASO 1-------------");
 			String path = getResourcesPath.createTempFile(pathFolderImage) + realNameImage;
-			System.out.println("--------------->PATH " + path);
 			imagesLocalProperties.setPathLocalImage(path);
 			imagesLocalProperties.setRealNameImage(realNameImage);
 			imagesLocalProperties.setVariable(variable);
@@ -71,25 +66,8 @@ public class StorageImageToLocal {
 
 	// GENERAR RESTO DEL NOMBRE PARA LA IMAGEN
 	public String generateRestoNameImage() throws NoSuchAlgorithmException {
-		System.out.println("PASO GENERATERESTONAME-------------");
-		String random = new Date() + "" + System.currentTimeMillis();
-		String randomName = getMd5(random);
-		return randomName;
+		UUID uuid = UUID.randomUUID();
+		return uuid.toString();
 	}
 
-	public String getMd5(String input) {
-		try {
-			System.out.println("PASO GET MD5-------------");
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			byte[] messageDigest = md.digest(input.getBytes());
-			BigInteger no = new BigInteger(1, messageDigest);
-			String hashtext = no.toString(16);
-			while (hashtext.length() < 32) {
-				hashtext = "0" + hashtext;
-			}
-			return hashtext;
-		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException(e);
-		}
-	}
 }
