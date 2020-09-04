@@ -132,14 +132,14 @@ public class StageMovilController implements Serializable, ErrorController {
 
 		JsonData.remove("staBoleta");
 		JsonData.put("staBoleta", dataJson.toString());
-		JsonData.put("staFechInicio", getValueKeyJsonObject.checkKey(JsonData, "fechaInicio").toString());
-		JsonData.put("staFechFin", getValueKeyJsonObject.checkKey(JsonData, "fechaFin").toString());
-		JsonData.remove("varImage1");
-		JsonData.remove("varImage2");
-		JsonData.remove("varImage3");
-		JsonData.remove("dni");
-		JsonData.remove("fechaInicio");
-		JsonData.remove("fechaFin");
+		JsonData.put("staFechInicio", getValueKeyJsonObject.checkKey(JsonData, "fechaInicio"));
+		JsonData.put("staFechFin", getValueKeyJsonObject.checkKey(JsonData, "fechaFin"));
+//		JsonData.remove("varImage1");
+//		JsonData.remove("varImage2");
+//		JsonData.remove("varImage3");
+//		JsonData.remove("dni");
+//		JsonData.remove("fechaInicio");
+//		JsonData.remove("fechaFin");
 		JsonData.put("staIdMovil", id);
 
 		pathMicro = null;
