@@ -118,8 +118,8 @@ public class StageMovilController implements Serializable, ErrorController {
 	public Object SaveDataMovil(@RequestBody String data, @RequestHeader(name = "Authorization") String token)
 			throws Throwable {
 		JSONObject JsonData = new JSONObject(data);
-
 		String jsonData = getValueKeyJsonObject.checkKey(JsonData, "staBoleta").toString();
+
 		JSONObject paramJsonData = new JSONObject(jsonData);
 		String paramImg1 = getValueKeyJsonObject.checkKey(JsonData, "varImage1").toString();
 		String paramImg2 = getValueKeyJsonObject.checkKey(JsonData, "varImage2").toString();
@@ -134,12 +134,6 @@ public class StageMovilController implements Serializable, ErrorController {
 		JsonData.put("staBoleta", dataJson.toString());
 		JsonData.put("staFechInicio", getValueKeyJsonObject.checkKey(JsonData, "fechaInicio"));
 		JsonData.put("staFechFin", getValueKeyJsonObject.checkKey(JsonData, "fechaFin"));
-//		JsonData.remove("varImage1");
-//		JsonData.remove("varImage2");
-//		JsonData.remove("varImage3");
-//		JsonData.remove("dni");
-//		JsonData.remove("fechaInicio");
-//		JsonData.remove("fechaFin");
 		JsonData.put("staIdMovil", id);
 
 		pathMicro = null;
