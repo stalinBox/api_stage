@@ -177,22 +177,35 @@ public class StageMovilController implements Serializable, ErrorController {
 		pathMicro = urlServidor + urlMicroSeguridades + "api/usuarioPersona/findByPerId/" + perId;
 		UsuarioPersonaDTO usuarioPersonaDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicro, auth,
 				UsuarioPersonaDTO.class);
+
 		// ----------------
 		pathMicro = null;
 		pathMicro = urlServidor + urlMicroSeguridades + "api/usuario/findByUsupIdAndApliId/" + usuarioPersonaDTO.getId()
 				+ "/" + apliId;
 		List<UsuarioDTO> usuarioDTO = (List<UsuarioDTO>) convertEntityUtil.ConvertListEntity(pathMicro, auth,
 				UsuarioDTO.class);
+
 		// ----------------
 		pathMicro = null;
 		pathMicro = urlServidor + urlMicroSeguridades + "usuarioperfil/findByUsupId/" + usuarioDTO.get(0).getId() + "/"
 				+ apliId;
-		UsuarioPerfilDTO usuarioPerfilDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicro, auth,
-				UsuarioPerfilDTO.class);
-		// ----------------Aqui pruebas
-		pathMicro = null;
-		pathMicro = urlServidor + urlMicroSeguridades + "perfil/findById/" + usuarioPerfilDTO.getPefId();
-		PerfilDTO perfilDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicro, auth, PerfilDTO.class);
+		List<UsuarioPerfilDTO> usuarioPerfilDTO = (List<UsuarioPerfilDTO>) convertEntityUtil
+				.ConvertListEntity(pathMicro, auth, UsuarioPerfilDTO.class);
+
+		PerfilDTO perfilDTO = null;
+		for (UsuarioPerfilDTO i : usuarioPerfilDTO) {
+			try {
+				pathMicro = null;
+				pathMicro = urlServidor + urlMicroSeguridades + "perfil/findById/" + i.getPefId();
+				perfilDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicro, auth, PerfilDTO.class);
+				if (perfilDTO.getPerfilTipo().getId() == 29) {
+					break;
+				}
+			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException
+					| IOException e) {
+				e.printStackTrace();
+			}
+		}
 
 		/**
 		 * **********************************************************************
@@ -239,8 +252,8 @@ public class StageMovilController implements Serializable, ErrorController {
 		responseDTO.setPerIdentificacion(personaDTO.getPerIdentificacion());
 		responseDTO.setPerNombres(personaDTO.getPerNombres());
 		responseDTO.setPerCelular(personaDTO.getPerCelular());
-		responseDTO.setUsuId(usuarioPerfilDTO.getUsuario().getId());
-		responseDTO.setUpefId(usuarioPerfilDTO.getId());
+		responseDTO.setUsuId(usuarioPerfilDTO.get(0).getUsuario().getId());
+		responseDTO.setUpefId(usuarioPerfilDTO.get(0).getId());
 		responseDTO.setTpefNombre(perfilDTO.getPerfilTipo().getTpefNombre());
 		responseDTO.setSectorDisperso(sectorDispersoDTOResponse);
 		responseDTO.setBrisId(Long.parseLong(integranteBrigadaDTO.get(0).getBriId().toString()));

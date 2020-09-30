@@ -122,7 +122,8 @@ public class UsuarioDTO implements Serializable {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "usup_id")
 	@ApiModelProperty(value = "Usuario Persona", notes = "***", position = 13)
-	@JsonProperty("usupId")
+	@JsonProperty("usuariopersona")
+//	@JsonProperty("usupId")
 	@JsonInclude(Include.NON_NULL)
 	private UsuarioPersonaDTO usuariopersona;
 }
