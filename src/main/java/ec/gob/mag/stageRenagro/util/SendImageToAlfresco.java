@@ -33,11 +33,14 @@ public class SendImageToAlfresco {
 	@Qualifier("getResourcesPath")
 	private GetResourcesPath getResourcesPath;
 
-	@Value("${url.logonAlfresco}")
-	private String urlLoginAlfresco;
+//	@Value("${url.logonAlfresco}")
+//	private String urlLoginAlfresco;
+//
+//	@Value("${url.urlUploadAlfresco}")
+//	private String urlUploadAlfresco;
 
-	@Value("${url.urlUploadAlfresco}")
-	private String urlUploadAlfresco;
+	@Value("${url.alfresco}")
+	private String urlAlfresco;
 
 	@Value("${param.email}")
 	private String email;
@@ -56,7 +59,7 @@ public class SendImageToAlfresco {
 
 	public ImagesProperties saveImageToAlfresco(String pathLocalImage, String nameFile, String variable)
 			throws IOException {
-		String responseLogin = accesoAlfresco.loginAlfresco(email, passwd, urlLoginAlfresco);
+		String responseLogin = accesoAlfresco.loginAlfresco(email, passwd, urlAlfresco + "api/login");
 		JSONObject JsonResponseLogin = new JSONObject(responseLogin);
 		getValueKeyJsonObject.setFinalresult(null);
 		Object tk = getValueKeyJsonObject.searchingJson(JsonResponseLogin, "token");
@@ -74,8 +77,8 @@ public class SendImageToAlfresco {
 		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(bodyMap, headers);
 
 		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<String> response = restTemplate.exchange(urlUploadAlfresco, HttpMethod.POST, requestEntity,
-				String.class);
+		ResponseEntity<String> response = restTemplate.exchange(urlAlfresco + "api/Pupload", HttpMethod.POST,
+				requestEntity, String.class);
 
 		if (response.getStatusCode() == HttpStatus.CREATED) {
 			ImagesProperties imgProperties = new ImagesProperties();
