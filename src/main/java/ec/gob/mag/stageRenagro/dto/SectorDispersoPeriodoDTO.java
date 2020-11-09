@@ -5,8 +5,6 @@ import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -35,7 +33,6 @@ public class SectorDispersoPeriodoDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "sedp_id")
 	private Integer sedpId;
 
@@ -48,17 +45,6 @@ public class SectorDispersoPeriodoDTO implements Serializable {
 	@Column(name = "sedp_insert")
 	private Timestamp sedpInsert;
 
-	// bi-directional many-to-one association to BrigadaSector
-//	@OneToMany(mappedBy = "sectorDispersoPeriodo")
-//	private List<BrigadaSectorDTO> brigadaSectors;
-
-	// bi-directional many-to-one association to BoletaPeriodo
-//	@ManyToOne
-//	@JoinColumn(name = "bolp_id")
-//	@JsonIgnore
-//	private BoletaPeriodo boletaPeriodo;
-
-	// bi-directional many-to-one association to SectorDisperso
 	@ManyToOne
 	@JoinColumn(name = "secd_id")
 	@JsonIgnore

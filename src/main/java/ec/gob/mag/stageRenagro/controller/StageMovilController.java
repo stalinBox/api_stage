@@ -239,6 +239,7 @@ public class StageMovilController implements Serializable, ErrorController {
 						+ sectorDispersoPeriodoDTO.getSecdId();
 				sectorDispersoDTO = convertEntityUtil.ConvertSingleEntityGET(pathMicro, auth, SectorDispersoDTO.class);
 				sectorDispersoDTO.setSecdpId(Long.parseLong(mpr.getSedpId().toString()));
+				sectorDispersoDTO.setBrisId(mpr.getBrisId());
 			} catch (IOException | NoSuchFieldException | SecurityException | IllegalArgumentException
 					| IllegalAccessException e) {
 				e.printStackTrace();
@@ -256,7 +257,7 @@ public class StageMovilController implements Serializable, ErrorController {
 		responseDTO.setUpefId(usuarioPerfilDTO.get(0).getId());
 		responseDTO.setTpefNombre(perfilDTO.getPerfilTipo().getTpefNombre());
 		responseDTO.setSectorDisperso(sectorDispersoDTOResponse);
-		responseDTO.setBrisId(Long.parseLong(integranteBrigadaDTO.get(0).getBriId().toString()));
+		responseDTO.setBriId(Long.parseLong(integranteBrigadaDTO.get(0).getBriId().toString()));
 		responseDTO.setBolpId(Long.parseLong(brigadaDTO.getBolpId().toString()));
 		return ResponseEntity.ok(responseDTO);
 	}

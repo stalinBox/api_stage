@@ -5,15 +5,13 @@ import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,34 +24,35 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 
-/**
- * The persistent class for the integrante_brigada database table.
- * 
- */
 @Entity
 public class IntegranteBrigadaDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@ApiModelProperty(value = "Id de la entidad integrante_brigada")
 	@Column(name = "intb_id")
 	private Long intbId;
 
+	@ApiModelProperty(value = "Estado de la entidad integrante_brigada")
 	@Column(name = "intb_estado")
 	private Integer intbEstado;
 
+	@ApiModelProperty(value = "Entidad Sector Disperso")
 	@Column(name = "intb_insert")
 	private Timestamp intbInsert;
 
+	@ApiModelProperty(value = "Entidad Sector Disperso")
 	@Column(name = "intb_update")
 	private Timestamp intbUpdate;
 
+	@ApiModelProperty(value = "Entidad Sector Disperso")
 	@Column(name = "usup_id")
 	private Long usupId;
 
+	@ApiModelProperty(value = "Entidad Sector Disperso")
 	@Column(name = "usup_id_insert")
 	private Integer usupIdInsert;
 
+	@ApiModelProperty(value = "Entidad Sector Disperso")
 	@Column(name = "usup_id_update")
 	private Integer usupIdUpdate;
 
