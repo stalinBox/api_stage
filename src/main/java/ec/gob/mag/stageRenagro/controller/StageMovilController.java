@@ -5,6 +5,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -114,9 +116,14 @@ public class StageMovilController implements Serializable, ErrorController {
 
 	@SuppressWarnings("finally")
 	@RequestMapping(value = "/saveData/", produces = { "application/json; charset=utf-8" }, method = RequestMethod.POST)
-	@ApiOperation(value = "Guardar los datos del movil de renagro", response = String.class)
+	@ApiOperation(value = "Guardar los datos del movil de la app de renagro", response = String.class)
+	@Transactional
 	public Object SaveDataMovil(@RequestBody String data, @RequestHeader(name = "Authorization") String token)
 			throws Throwable {
+		// --------
+		String staExcepcion = null;
+		Long staEstadoProcesamiento = null;
+		// ---
 		JSONObject JsonData = new JSONObject(data);
 		String jsonData = getValueKeyJsonObject.checkKey(JsonData, "staBoleta").toString();
 
@@ -127,31 +134,42 @@ public class StageMovilController implements Serializable, ErrorController {
 		String paramDNI = getValueKeyJsonObject.checkKey(JsonData, "dni").toString();
 		String id = getValueKeyJsonObject.checkKey(JsonData, "id").toString();
 
-		JSONObject dataJson = gestionarJsonData.gestionarJsonData(paramJsonData, paramImg1, paramImg2, paramImg3,
-				paramDNI);
-
+		JSONObject dataJson = null;
+		try {
+			dataJson = gestionarJsonData.gestionarJsonData(paramJsonData, paramImg1, paramImg2, paramImg3, paramDNI);
+		} catch (Exception e) {
+			dataJson = JsonData;
+			staExcepcion = e.getMessage();
+			staEstadoProcesamiento = (long) 4;
+		}
 		JsonData.remove("staBoleta");
 		JsonData.put("staBoleta", dataJson.toString());
 		JsonData.put("staFechInicio", getValueKeyJsonObject.checkKey(JsonData, "fechaInicio"));
 		JsonData.put("staFechFin", getValueKeyJsonObject.checkKey(JsonData, "fechaFin"));
 		JsonData.put("staIdMovil", id);
+		JsonData.put("staExcepcion", staExcepcion);
+		JsonData.put("staEstadoProcesamiento", staEstadoProcesamiento);
 
 		pathMicro = null;
 		pathMicro = urlServidor + urlMicroStageRenagro + "stage/create/";
-		System.out.println("URL: " + pathMicro);
 		ResponseSaveRenagroDTO responseDTO = convertEntityUtil.ConvertSingleEntityPOST(pathMicro, JsonData.toString(),
 				token, ResponseSaveRenagroDTO.class);
 
 		pathMicro = null;
 		pathMicro = urlProcesamiento + "renagroprocesadatosmovil/procesaDatosMovil/" + responseDTO.getId();
-		System.out.println("--> " + pathMicro);
+		System.out.println("====> staEstadoProcesamiento<==== :" + staEstadoProcesamiento);
 
-		// ENVIAR AL BACKGROUND PHP
-		try {
-			consumer.doGet(pathMicro, "");
-		} finally {
-			// TODO: handle finally clause
+		if (staEstadoProcesamiento != null) {
+			System.out.println("no paso por PHP");
 			return responseDTO;
+		} else {
+			// ENVIAR AL BACKGROUND PHP
+			System.out.println("si paso por PHP");
+			try {
+				consumer.doGet(pathMicro, "");
+			} finally {
+				return responseDTO;
+			}
 		}
 
 	}
