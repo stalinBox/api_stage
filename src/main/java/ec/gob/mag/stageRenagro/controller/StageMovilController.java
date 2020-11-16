@@ -141,7 +141,13 @@ public class StageMovilController implements Serializable, ErrorController {
 			dataJson = JsonData;
 			staExcepcion = e.getMessage();
 			staEstadoProcesamiento = (long) 4;
+
+			e.printStackTrace();
+			System.out.println("...staExcepcion Message : " + e.getMessage());
+			System.out.println("... localizedMessage: " + e.getLocalizedMessage());
 		}
+
+		System.out.println("fuera de la excepcion: " + staExcepcion);
 		JsonData.remove("staBoleta");
 		JsonData.put("staBoleta", dataJson.toString());
 		JsonData.put("staFechInicio", getValueKeyJsonObject.checkKey(JsonData, "fechaInicio"));
