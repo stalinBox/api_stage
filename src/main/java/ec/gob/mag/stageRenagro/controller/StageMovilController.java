@@ -120,10 +120,8 @@ public class StageMovilController implements Serializable, ErrorController {
 	@Transactional
 	public Object SaveDataMovil(@RequestBody String data, @RequestHeader(name = "Authorization") String token)
 			throws Throwable {
-		// --------
 		String staExcepcion = null;
 		Long staEstadoProcesamiento = null;
-		// ---
 		JSONObject JsonData = new JSONObject(data);
 		String jsonData = getValueKeyJsonObject.checkKey(JsonData, "staBoleta").toString();
 
@@ -141,13 +139,9 @@ public class StageMovilController implements Serializable, ErrorController {
 			dataJson = JsonData;
 			staExcepcion = e.getMessage();
 			staEstadoProcesamiento = (long) 4;
-
 			e.printStackTrace();
-			System.out.println("...staExcepcion Message : " + e.getMessage());
-			System.out.println("... localizedMessage: " + e.getLocalizedMessage());
 		}
 
-		System.out.println("fuera de la excepcion: " + staExcepcion);
 		JsonData.remove("staBoleta");
 		JsonData.put("staBoleta", dataJson.toString());
 		JsonData.put("staFechInicio", getValueKeyJsonObject.checkKey(JsonData, "fechaInicio"));
@@ -166,11 +160,9 @@ public class StageMovilController implements Serializable, ErrorController {
 		System.out.println("====> staEstadoProcesamiento<==== :" + staEstadoProcesamiento);
 
 		if (staEstadoProcesamiento != null) {
-			System.out.println("no paso por PHP");
 			return responseDTO;
 		} else {
 			// ENVIAR AL BACKGROUND PHP
-			System.out.println("si paso por PHP");
 			try {
 				consumer.doGet(pathMicro, "");
 			} finally {

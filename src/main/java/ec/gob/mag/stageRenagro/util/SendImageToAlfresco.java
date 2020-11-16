@@ -60,7 +60,6 @@ public class SendImageToAlfresco {
 	public ImagesProperties saveImageToAlfresco(String pathLocalImage, String nameFile, String variable)
 			throws IOException {
 		String responseLogin = accesoAlfresco.loginAlfresco(email, passwd, urlAlfresco + "api/login");
-		System.out.println("URL ALFRESCO: " + urlAlfresco + "api/login");
 		JSONObject JsonResponseLogin = new JSONObject(responseLogin);
 		getValueKeyJsonObject.setFinalresult(null);
 		Object tk = getValueKeyJsonObject.searchingJson(JsonResponseLogin, "token");
@@ -80,7 +79,6 @@ public class SendImageToAlfresco {
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<String> response = restTemplate.exchange(urlAlfresco + "api/Pupload", HttpMethod.POST,
 				requestEntity, String.class);
-		System.out.println("URL ALFRESCO: " + urlAlfresco + "api/Pupload");
 		if (response.getStatusCode() == HttpStatus.CREATED) {
 			ImagesProperties imgProperties = new ImagesProperties();
 			imgProperties.setNameFile(nameFile);
