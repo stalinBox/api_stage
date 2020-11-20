@@ -162,12 +162,14 @@ public class StageMovilController implements Serializable, ErrorController {
 		System.out.println("staIdMovil: " + id);
 
 		if (staEstadoProcesamiento != null) {
+			System.out.println("=== SAVE FINISHED NO PHP  ===");
 			return responseDTO;
 		} else {
 			// ENVIAR AL BACKGROUND PHP
 			try {
 				consumer.doGet(pathMicro, "");
 			} finally {
+				System.out.println("=== SAVE FINISHED SI PHP ===");
 				return responseDTO;
 			}
 		}
