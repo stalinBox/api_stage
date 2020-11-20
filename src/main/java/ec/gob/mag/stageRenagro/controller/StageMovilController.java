@@ -120,6 +120,7 @@ public class StageMovilController implements Serializable, ErrorController {
 	@Transactional
 	public Object SaveDataMovil(@RequestBody String data, @RequestHeader(name = "Authorization") String token)
 			throws Throwable {
+		System.out.println("=== SAVE STARTED ===");
 		String staExcepcion = null;
 		Long staEstadoProcesamiento = null;
 		JSONObject JsonData = new JSONObject(data);
@@ -158,6 +159,7 @@ public class StageMovilController implements Serializable, ErrorController {
 		pathMicro = null;
 		pathMicro = urlProcesamiento + "renagroprocesadatosmovil/procesaDatosMovil/" + responseDTO.getId();
 		System.out.println("====> staEstadoProcesamiento<==== :" + staEstadoProcesamiento);
+		System.out.println("staIdMovil: " + id);
 
 		if (staEstadoProcesamiento != null) {
 			return responseDTO;
