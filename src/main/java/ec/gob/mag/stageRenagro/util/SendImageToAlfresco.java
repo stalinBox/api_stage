@@ -33,12 +33,6 @@ public class SendImageToAlfresco {
 	@Qualifier("getResourcesPath")
 	private GetResourcesPath getResourcesPath;
 
-//	@Value("${url.logonAlfresco}")
-//	private String urlLoginAlfresco;
-//
-//	@Value("${url.urlUploadAlfresco}")
-//	private String urlUploadAlfresco;
-
 	@Value("${url.alfresco}")
 	private String urlAlfresco;
 

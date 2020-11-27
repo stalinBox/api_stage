@@ -136,6 +136,7 @@ public class StageMovilController implements Serializable, ErrorController {
 		JSONObject dataJson = null;
 		try {
 			dataJson = gestionarJsonData.gestionarJsonData(paramJsonData, paramImg1, paramImg2, paramImg3, paramDNI);
+			staEstadoProcesamiento = (long) 1;
 		} catch (Exception e) {
 			dataJson = JsonData;
 			staExcepcion = e.getMessage();
@@ -161,10 +162,7 @@ public class StageMovilController implements Serializable, ErrorController {
 		System.out.println("====> staEstadoProcesamiento<==== :" + staEstadoProcesamiento);
 		System.out.println("staIdMovil: " + id);
 
-		if (staEstadoProcesamiento != null) {
-			System.out.println("=== SAVE FINISHED NO PHP  ===");
-			return responseDTO;
-		} else {
+		if (staEstadoProcesamiento == 1) {
 			// ENVIAR AL BACKGROUND PHP
 			try {
 				consumer.doGet(pathMicro, "");
@@ -172,6 +170,9 @@ public class StageMovilController implements Serializable, ErrorController {
 				System.out.println("=== SAVE FINISHED SI PHP ===");
 				return responseDTO;
 			}
+		} else {
+			System.out.println("=== SAVE FINISHED NO PHP  ===");
+			return responseDTO;
 		}
 
 	}
