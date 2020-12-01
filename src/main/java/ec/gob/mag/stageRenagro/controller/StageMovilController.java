@@ -172,7 +172,7 @@ public class StageMovilController implements Serializable, ErrorController {
 		InetAddress ip2;
 		ip2 = InetAddress.getLocalHost();
 		String hostname2 = ip2.getHostName();
-		System.out.println("IP ANTES DE ENVIAR: " + ip2 + " :hostname " + hostname2);
+		System.out.println("IP DESPUES DE ENVIAR: " + ip2 + " :hostname " + hostname2);
 
 		System.out.println("id del stage devuelto: " + responseDTO.getId());
 		pathMicro = null;
