@@ -2,9 +2,11 @@ package ec.gob.mag.stageRenagro.controller;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -154,9 +158,23 @@ public class StageMovilController implements Serializable, ErrorController {
 
 		pathMicro = null;
 		pathMicro = urlServidor + urlMicroStageRenagro + "stage/create/";
+
+		System.out.println("==== IP ANTES ===");
+		InetAddress ip;
+		ip = InetAddress.getLocalHost();
+		String hostname = ip.getHostName();
+		System.out.println("IP ANTES DE ENVIAR: " + ip + " :hostname " + hostname);
+
 		ResponseSaveRenagroDTO responseDTO = convertEntityUtil.ConvertSingleEntityPOST(pathMicro, JsonData.toString(),
 				token, ResponseSaveRenagroDTO.class);
 
+		System.out.println("==== IP DESPUES ===");
+		InetAddress ip2;
+		ip2 = InetAddress.getLocalHost();
+		String hostname2 = ip2.getHostName();
+		System.out.println("IP ANTES DE ENVIAR: " + ip2 + " :hostname " + hostname2);
+
+		System.out.println("id del stage devuelto: " + responseDTO.getId());
 		pathMicro = null;
 		pathMicro = urlProcesamiento + "renagroprocesadatosmovil/procesaDatosMovil/" + responseDTO.getId();
 		System.out.println("====> staEstadoProcesamiento<==== :" + staEstadoProcesamiento);
