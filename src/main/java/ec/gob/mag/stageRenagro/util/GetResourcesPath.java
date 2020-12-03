@@ -16,7 +16,7 @@ public class GetResourcesPath {
 		return file.getParent() + "//";
 	}
 
-	public Resource getUserFileResource(String pathLocalImage) throws IOException {
+	public Resource getUserFileResource(String pathLocalImage) {
 		File tempFile = new File(pathLocalImage);
 		return new FileSystemResource(tempFile);
 	}

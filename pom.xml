@@ -107,6 +107,12 @@
 			<artifactId>validation-api</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>com.github.vladimir-bukhtoyarov</groupId>
+			<artifactId>bucket4j-core</artifactId>
+			<version>4.10.0</version>
+		</dependency>
+
 		<!--SEGURIDADES CLIENTE -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>

@@ -13,4 +13,5 @@ public class ImagesProperties {
 	String nameFile;
 	String nameFolder;
 	String variable;
+	String status;
 }

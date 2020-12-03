@@ -34,7 +34,7 @@ public class AccesoAlfresco {
 		if (response.getStatusCode() == HttpStatus.OK) {
 			return response.getBody();
 		} else {
-			return "Request Failed";
+			return null;
 		}
 	}
 }

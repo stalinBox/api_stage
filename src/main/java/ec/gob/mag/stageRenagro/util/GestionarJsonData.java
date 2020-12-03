@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import ec.gob.mag.stageRenagro.dto.ImagesJson;
@@ -34,11 +35,11 @@ public class GestionarJsonData {
 	@Qualifier("deleteImagesTmp")
 	private DeleteImagesTmp deleteImagesTmp;
 
-	public JSONObject gestionarJsonData(JSONObject JsonData, String paramImage1, String paramImage2, String paramImage3,
-			String ciEncuestador) throws Throwable {
+	@Async
+	public JsonDataWithStatus gestionarJsonData(JSONObject JsonData, String paramImage1, String paramImage2,
+			String paramImage3, String ciEncuestador) {
 		List<ImagesJson> imagesJson = new ArrayList<ImagesJson>();
 		List<ImagesLocalProperties> imgProperties = new ArrayList<ImagesLocalProperties>();
-		ImagesProperties imgProp = new ImagesProperties();
 
 		imagesJson.add(new ImagesJson(JsonData.getJSONObject("formA").get(paramImage1).toString(), paramImage1));
 		imagesJson.add(new ImagesJson(JsonData.getJSONObject("formA").get(paramImage2).toString(), paramImage2));
@@ -50,7 +51,6 @@ public class GestionarJsonData {
 				imagesLocalProperties = storageImageToLocal.saveImagesToLocal(mprImgJson.getBase64(), ciEncuestador,
 						mprImgJson.getVariable());
 			} catch (IOException | NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -60,23 +60,35 @@ public class GestionarJsonData {
 
 		if (!imgProperties.isEmpty()) {
 			for (ImagesLocalProperties i : imgProperties) {
-				imgProp = sendImageToAlfresco.saveImageToAlfresco(i.getPathLocalImage(), i.getRealNameImage(),
-						i.getVariable());
 
-				if (imgProp.getVariable().equals(paramImage1) || imgProp.getVariable().equals(paramImage2)) {
-					JsonData.getJSONObject("formA").remove(i.getVariable());
-					JsonData.getJSONObject("formA").put(imgProp.getVariable(),
-							imgProp.getNameFolder() + "/" + imgProp.getNameFile());
+				ImagesProperties imgProp = sendImageToAlfresco.saveImageToAlfresco(i.getPathLocalImage(),
+						i.getRealNameImage(), i.getVariable());
+
+				if (imgProp.getStatus() == null) {
+					if (imgProp.getVariable().equals(paramImage1) || imgProp.getVariable().equals(paramImage2)) {
+						JsonData.getJSONObject("formA").remove(i.getVariable());
+						JsonData.getJSONObject("formA").put(imgProp.getVariable(),
+								imgProp.getNameFolder() + "/" + imgProp.getNameFile());
+					} else {
+						JsonData.getJSONObject("formC").remove(i.getVariable());
+						JsonData.getJSONObject("formC").put(imgProp.getVariable(),
+								imgProp.getNameFolder() + "/" + imgProp.getNameFile());
+					}
+					deleteImagesTmp.deleteImagesLocalTmp(i.getPathLocalImage());
+
 				} else {
-					JsonData.getJSONObject("formC").remove(i.getVariable());
-					JsonData.getJSONObject("formC").put(imgProp.getVariable(),
-							imgProp.getNameFolder() + "/" + imgProp.getNameFile());
+					JsonDataWithStatus jdStatus = new JsonDataWithStatus();
+					jdStatus.setJsonData(JsonData);
+					jdStatus.setStatus(imgProp.getStatus());
+					return jdStatus;
 				}
-				deleteImagesTmp.deleteImagesLocalTmp(i.getPathLocalImage());
+
 			}
 		}
-
-		return JsonData;
+		JsonDataWithStatus jdStatus = new JsonDataWithStatus();
+		jdStatus.setJsonData(JsonData);
+		jdStatus.setStatus(null);
+		return jdStatus;
 	}
 
 }

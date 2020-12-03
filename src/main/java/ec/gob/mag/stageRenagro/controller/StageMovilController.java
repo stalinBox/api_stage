@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,6 +40,7 @@ import ec.gob.mag.stageRenagro.util.Consumer;
 import ec.gob.mag.stageRenagro.util.ConvertEntityUtil;
 import ec.gob.mag.stageRenagro.util.GestionarJsonData;
 import ec.gob.mag.stageRenagro.util.GetValueKeyJsonObject;
+import ec.gob.mag.stageRenagro.util.JsonDataWithStatus;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponses;
@@ -115,10 +117,12 @@ public class StageMovilController implements Serializable, ErrorController {
 	@SuppressWarnings("finally")
 	@RequestMapping(value = "/saveData/", produces = { "application/json; charset=utf-8" }, method = RequestMethod.POST)
 	@ApiOperation(value = "Guardar los datos del movil de la app de renagro", response = String.class)
+	@Async
 	public Object SaveDataMovil(@RequestBody String data, @RequestHeader(name = "Authorization") String token)
 			throws Throwable {
 
 		JSONObject JsonData = new JSONObject(data);
+		JSONObject JsonDataBK = new JSONObject();
 		// EXTRACCION DE VALORES INDEPENDIENTES RECIBIDOS
 		String jsonData = getValueKeyJsonObject.checkKey(JsonData, "staBoleta").toString();
 		JSONObject paramJsonData = new JSONObject(jsonData);
@@ -128,27 +132,30 @@ public class StageMovilController implements Serializable, ErrorController {
 		String paramDNI = getValueKeyJsonObject.checkKey(JsonData, "dni").toString();
 		String id = getValueKeyJsonObject.checkKey(JsonData, "id").toString();
 
+		// ENVIAR LA TRAMA COMPLETA A LA TABLA DE BACKUP DEL STAGE
+		pathMicro = null;
+		pathMicro = urlServidor + urlMicroStageRenagro + "tramaCompleta/create/";
+		JsonDataBK.put("staId", id);
+		JsonDataBK.put("trcTrama", JsonData.toString());
+		consumer.doPost(pathMicro, JsonDataBK.toString(), token);
+
 		// VARIABLES DE APOYO
-		String auxJsonData = null;
 		String staExcepcion = null;
 		Long staEstadoProcesamiento = null;
 		ResponseSaveRenagroDTO responseDTO = null;
 
-		System.out.println("=== SAVE STARTED ===" + id);
-
-		JSONObject dataJson = null;
-		try {
-			dataJson = gestionarJsonData.gestionarJsonData(paramJsonData, paramImg1, paramImg2, paramImg3, paramDNI);
+		JsonDataWithStatus jdStatus = new JsonDataWithStatus();
+		jdStatus = gestionarJsonData.gestionarJsonData(paramJsonData, paramImg1, paramImg2, paramImg3, paramDNI);
+		if (jdStatus.getStatus() == null) {
 			staEstadoProcesamiento = (long) 1;
-		} catch (Exception e) {
-			auxJsonData = jsonData;
-			staExcepcion = e.getMessage();
+			staExcepcion = jdStatus.getStatus();
+		} else {
+			staExcepcion = jdStatus.getStatus();
 			staEstadoProcesamiento = (long) 4;
-			e.printStackTrace();
 		}
 
 		JsonData.remove("staBoleta");
-		JsonData.put("staBoleta", dataJson.toString());
+		JsonData.put("staBoleta", jdStatus.getJsonData().toString());
 		JsonData.put("staFechInicio", getValueKeyJsonObject.checkKey(JsonData, "fechaInicio"));
 		JsonData.put("staFechFin", getValueKeyJsonObject.checkKey(JsonData, "fechaFin"));
 		JsonData.put("staIdMovil", id);
@@ -172,8 +179,6 @@ public class StageMovilController implements Serializable, ErrorController {
 				return responseDTO;
 			}
 		} else {
-			JsonData.remove("staBoleta");
-			JsonData.put("staBoleta", auxJsonData);
 			responseDTO = convertEntityUtil.ConvertSingleEntityPOST(pathMicro, JsonData.toString(), token,
 					ResponseSaveRenagroDTO.class);
 			System.out.println("=== SAVE FINISHED NO ENVIO A PHP  ===" + id);
