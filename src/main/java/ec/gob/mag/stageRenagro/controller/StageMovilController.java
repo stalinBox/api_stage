@@ -2,12 +2,8 @@ package ec.gob.mag.stageRenagro.controller;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,8 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -121,15 +115,12 @@ public class StageMovilController implements Serializable, ErrorController {
 	@SuppressWarnings("finally")
 	@RequestMapping(value = "/saveData/", produces = { "application/json; charset=utf-8" }, method = RequestMethod.POST)
 	@ApiOperation(value = "Guardar los datos del movil de la app de renagro", response = String.class)
-	@Transactional
 	public Object SaveDataMovil(@RequestBody String data, @RequestHeader(name = "Authorization") String token)
 			throws Throwable {
-		System.out.println("=== SAVE STARTED ===");
-		String staExcepcion = null;
-		Long staEstadoProcesamiento = null;
-		JSONObject JsonData = new JSONObject(data);
-		String jsonData = getValueKeyJsonObject.checkKey(JsonData, "staBoleta").toString();
 
+		JSONObject JsonData = new JSONObject(data);
+		// EXTRACCION DE VALORES INDEPENDIENTES RECIBIDOS
+		String jsonData = getValueKeyJsonObject.checkKey(JsonData, "staBoleta").toString();
 		JSONObject paramJsonData = new JSONObject(jsonData);
 		String paramImg1 = getValueKeyJsonObject.checkKey(JsonData, "varImage1").toString();
 		String paramImg2 = getValueKeyJsonObject.checkKey(JsonData, "varImage2").toString();
@@ -137,15 +128,23 @@ public class StageMovilController implements Serializable, ErrorController {
 		String paramDNI = getValueKeyJsonObject.checkKey(JsonData, "dni").toString();
 		String id = getValueKeyJsonObject.checkKey(JsonData, "id").toString();
 
+		// VARIABLES DE APOYO
+		String auxJsonData = null;
+		String staExcepcion = null;
+		Long staEstadoProcesamiento = null;
+		ResponseSaveRenagroDTO responseDTO = null;
+
+		System.out.println("=== SAVE STARTED ===" + id);
+
 		JSONObject dataJson = null;
 		try {
 			dataJson = gestionarJsonData.gestionarJsonData(paramJsonData, paramImg1, paramImg2, paramImg3, paramDNI);
 			staEstadoProcesamiento = (long) 1;
 		} catch (Exception e) {
-			dataJson = JsonData;
+			auxJsonData = jsonData;
 			staExcepcion = e.getMessage();
 			staEstadoProcesamiento = (long) 4;
-			e.printStackTrace();
+			// e.printStackTrace();
 		}
 
 		JsonData.remove("staBoleta");
@@ -159,37 +158,25 @@ public class StageMovilController implements Serializable, ErrorController {
 		pathMicro = null;
 		pathMicro = urlServidor + urlMicroStageRenagro + "stage/create/";
 
-		System.out.println("==== IP ANTES ===");
-		InetAddress ip;
-		ip = InetAddress.getLocalHost();
-		String hostname = ip.getHostName();
-		System.out.println("IP ANTES DE ENVIAR: " + ip + " :hostname " + hostname);
-
-		ResponseSaveRenagroDTO responseDTO = convertEntityUtil.ConvertSingleEntityPOST(pathMicro, JsonData.toString(),
-				token, ResponseSaveRenagroDTO.class);
-
-		System.out.println("==== IP DESPUES ===");
-		InetAddress ip2;
-		ip2 = InetAddress.getLocalHost();
-		String hostname2 = ip2.getHostName();
-		System.out.println("IP DESPUES DE ENVIAR: " + ip2 + " :hostname " + hostname2);
-
-		System.out.println("id del stage devuelto: " + responseDTO.getId());
-		pathMicro = null;
-		pathMicro = urlProcesamiento + "renagroprocesadatosmovil/procesaDatosMovil/" + responseDTO.getId();
 		System.out.println("====> staEstadoProcesamiento<==== :" + staEstadoProcesamiento);
-		System.out.println("staIdMovil: " + id);
-
 		if (staEstadoProcesamiento == 1) {
 			// ENVIAR AL BACKGROUND PHP
 			try {
-				consumer.doGet(pathMicro, "");
+				responseDTO = convertEntityUtil.ConvertSingleEntityPOST(pathMicro, JsonData.toString(), token,
+						ResponseSaveRenagroDTO.class);
+				String pathProcesamientoPHP = urlProcesamiento + "renagroprocesadatosmovil/procesaDatosMovil/"
+						+ responseDTO.getId();
+				consumer.doGet(pathProcesamientoPHP, "");
 			} finally {
-				System.out.println("=== SAVE FINISHED SI PHP ===");
+				System.out.println("=== SAVE FINISHED SI ENVIO A PHP ===" + id);
 				return responseDTO;
 			}
 		} else {
-			System.out.println("=== SAVE FINISHED NO PHP  ===");
+			JsonData.remove("staBoleta");
+			JsonData.put("staBoleta", auxJsonData);
+			responseDTO = convertEntityUtil.ConvertSingleEntityPOST(pathMicro, JsonData.toString(), token,
+					ResponseSaveRenagroDTO.class);
+			System.out.println("=== SAVE FINISHED NO ENVIO A PHP  ===" + id);
 			return responseDTO;
 		}
 
