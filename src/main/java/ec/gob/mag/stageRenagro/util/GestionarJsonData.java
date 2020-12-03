@@ -62,7 +62,12 @@ public class GestionarJsonData {
 			for (ImagesLocalProperties i : imgProperties) {
 				imgProp = sendImageToAlfresco.saveImageToAlfresco(i.getPathLocalImage(), i.getRealNameImage(),
 						i.getVariable());
-				if (imgProp.getVariable().equals(paramImage1) || imgProp.getVariable().equals(paramImage2)) {
+				System.out.println("--paramImage1 " + paramImage1);
+				System.out.println("-- " + i.getPathLocalImage());
+				System.out.println("--paramImage2 " + paramImage2);
+				System.out.println("-- " + i.getPathLocalImage());
+
+				if (imgProp.getVariable() == paramImage1 || imgProp.getVariable() == paramImage2) {
 					JsonData.getJSONObject("formA").remove(i.getVariable());
 					JsonData.getJSONObject("formA").put(imgProp.getVariable(),
 							imgProp.getNameFolder() + "/" + imgProp.getNameFile());
@@ -71,6 +76,16 @@ public class GestionarJsonData {
 					JsonData.getJSONObject("formC").put(imgProp.getVariable(),
 							imgProp.getNameFolder() + "/" + imgProp.getNameFile());
 				}
+
+//				if (imgProp.getVariable().equals(paramImage1) || imgProp.getVariable().equals(paramImage2)) {
+//					JsonData.getJSONObject("formA").remove(i.getVariable());
+//					JsonData.getJSONObject("formA").put(imgProp.getVariable(),
+//							imgProp.getNameFolder() + "/" + imgProp.getNameFile());
+//				} else {
+//					JsonData.getJSONObject("formC").remove(i.getVariable());
+//					JsonData.getJSONObject("formC").put(imgProp.getVariable(),
+//							imgProp.getNameFolder() + "/" + imgProp.getNameFile());
+//				}
 				deleteImagesTmp.deleteImagesLocalTmp(i.getPathLocalImage());
 			}
 		}
