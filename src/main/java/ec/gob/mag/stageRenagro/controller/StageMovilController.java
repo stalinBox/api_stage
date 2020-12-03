@@ -144,7 +144,7 @@ public class StageMovilController implements Serializable, ErrorController {
 			auxJsonData = jsonData;
 			staExcepcion = e.getMessage();
 			staEstadoProcesamiento = (long) 4;
-			// e.printStackTrace();
+			e.printStackTrace();
 		}
 
 		JsonData.remove("staBoleta");
