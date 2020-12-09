@@ -117,7 +117,6 @@ public class StageMovilController implements Serializable, ErrorController {
 	@SuppressWarnings("finally")
 	@RequestMapping(value = "/saveData/", produces = { "application/json; charset=utf-8" }, method = RequestMethod.POST)
 	@ApiOperation(value = "Guardar los datos del movil de la app de renagro", response = String.class)
-	@Async
 	public Object SaveDataMovil(@RequestBody String data, @RequestHeader(name = "Authorization") String token)
 			throws Throwable {
 
@@ -169,24 +168,24 @@ public class StageMovilController implements Serializable, ErrorController {
 		pathMicro = urlServidor + urlMicroStageRenagro + "stage/create/";
 
 		System.out.println("====> staEstadoProcesamiento<==== :" + staEstadoProcesamiento);
-		if (staEstadoProcesamiento == 1) {
-			// ENVIAR AL BACKGROUND PHP
-			try {
-				responseDTO = convertEntityUtil.ConvertSingleEntityPOST(pathMicro, JsonData.toString(), token,
-						ResponseSaveRenagroDTO.class);
-				String pathProcesamientoPHP = urlProcesamiento + "renagroprocesadatosmovil/procesaDatosMovil/"
-						+ responseDTO.getId();
-				consumer.doGet(pathProcesamientoPHP, "");
-			} finally {
-				System.out.println("=== SAVE FINISHED SI ENVIO A PHP ===" + id);
-				return responseDTO;
-			}
-		} else {
+//		if (staEstadoProcesamiento == 1) {
+		// ENVIAR AL BACKGROUND PHP
+		try {
 			responseDTO = convertEntityUtil.ConvertSingleEntityPOST(pathMicro, JsonData.toString(), token,
 					ResponseSaveRenagroDTO.class);
-			System.out.println("=== SAVE FINISHED NO ENVIO A PHP  ===" + id);
+			String pathProcesamientoPHP = urlProcesamiento + "renagroprocesadatosmovil/procesaDatosMovil/"
+					+ responseDTO.getId();
+			consumer.doGet(pathProcesamientoPHP, "");
+		} finally {
+			System.out.println("=== SAVE FINISHED SI ENVIO A PHP ===" + id);
 			return responseDTO;
 		}
+//		} else {
+//			responseDTO = convertEntityUtil.ConvertSingleEntityPOST(pathMicro, JsonData.toString(), token,
+//					ResponseSaveRenagroDTO.class);
+//			System.out.println("=== SAVE FINISHED NO ENVIO A PHP  ===" + id);
+//			return responseDTO;
+//		}
 
 	}
 
