@@ -123,8 +123,10 @@ public class StageMovilController implements Serializable, ErrorController {
 
 		JSONObject JsonData = new JSONObject(data);
 		JSONObject JsonDataBK = new JSONObject();
+
 		// EXTRACCION DE VALORES INDEPENDIENTES RECIBIDOS
 		String jsonData = getValueKeyJsonObject.checkKey(JsonData, "staBoleta").toString();
+
 		JSONObject paramJsonData = new JSONObject(jsonData);
 		String paramImg1 = getValueKeyJsonObject.checkKey(JsonData, "varImage1").toString();
 		String paramImg2 = getValueKeyJsonObject.checkKey(JsonData, "varImage2").toString();
@@ -141,21 +143,22 @@ public class StageMovilController implements Serializable, ErrorController {
 
 		// VARIABLES DE APOYO
 		String staExcepcion = null;
-		Long staEstadoProcesamiento = null;
+		Long staEstadoProcesamiento = (long) 1;
 		ResponseSaveRenagroDTO responseDTO = null;
 
-		JsonDataWithStatus jdStatus = new JsonDataWithStatus();
-		jdStatus = gestionarJsonData.gestionarJsonData(paramJsonData, paramImg1, paramImg2, paramImg3, paramDNI);
-		if (jdStatus.getStatus() == null) {
-			staEstadoProcesamiento = (long) 1;
-			staExcepcion = jdStatus.getStatus();
-		} else {
-			staExcepcion = jdStatus.getStatus();
-			staEstadoProcesamiento = (long) 4;
-		}
+//		JsonDataWithStatus jdStatus = new JsonDataWithStatus();
+//		jdStatus = gestionarJsonData.gestionarJsonData(paramJsonData, paramImg1, paramImg2, paramImg3, paramDNI);
+//		if (jdStatus.getStatus() == null) {
+//			staEstadoProcesamiento = (long) 1;
+//			staExcepcion = jdStatus.getStatus();
+//		} else {
+//			staExcepcion = jdStatus.getStatus();
+//			staEstadoProcesamiento = (long) 4;
+//		}
 
 		JsonData.remove("staBoleta");
-		JsonData.put("staBoleta", jdStatus.getJsonData().toString());
+//		JsonData.put("staBoleta", jdStatus.getJsonData().toString());
+		JsonData.put("staBoleta", jsonData);
 		JsonData.put("staFechInicio", getValueKeyJsonObject.checkKey(JsonData, "fechaInicio"));
 		JsonData.put("staFechFin", getValueKeyJsonObject.checkKey(JsonData, "fechaFin"));
 		JsonData.put("staIdMovil", id);
