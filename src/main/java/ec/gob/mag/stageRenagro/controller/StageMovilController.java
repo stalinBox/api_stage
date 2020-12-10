@@ -163,18 +163,18 @@ public class StageMovilController implements Serializable, ErrorController {
 
 		String pathMicroStage = urlServidor + urlMicroStageRenagro + "stage/create/";
 
-		System.out.println("====> staEstadoProcesamiento<==== :" + staEstadoProcesamiento);
+//		System.out.println("====> staEstadoProcesamiento<==== :" + staEstadoProcesamiento);
 //		if (staEstadoProcesamiento == 1) {
 		responseDTO = convertEntityUtil.ConvertSingleEntityPOST(pathMicroStage, JsonData.toString(), token,
 				ResponseSaveRenagroDTO.class);
-		String pathProcesamientoPHP = urlProcesamiento + "renagroprocesadatosmovil/procesaDatosMovil/"
-				+ responseDTO.getId();
-		try {
-			consumer.doGet(pathProcesamientoPHP, "");
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-		}
+//		String pathProcesamientoPHP = urlProcesamiento + "renagroprocesadatosmovil/procesaDatosMovil/"
+//				+ responseDTO.getId();
+//		try {
+//			consumer.doGet(pathProcesamientoPHP, "");
+//		} catch (Exception e) {
+		// TODO: handle exception
+//			e.printStackTrace();
+//		}
 		return responseDTO;
 
 //		} else {
