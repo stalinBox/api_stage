@@ -11,7 +11,8 @@ despliegue_pruebas:
     - mvn clean install
     - mvn install -DSkiptests
     - /opt/wildfly/bin/jboss-cli.sh --connect --controller=10.10.1.121:9990  --user=$PRUEBAS_USUARIO_WILDFLY --password=$PRUEBAS_PASSWORD_WILDFLY
-    - deploy target/stage_movil_renagro-0.0.1.war --force
+ #   - deploy target/stage_movil_renagro-0.0.1.war --force
+    - pwd
   tags:
     - shell
   only:
