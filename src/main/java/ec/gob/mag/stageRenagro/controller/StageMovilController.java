@@ -113,7 +113,6 @@ public class StageMovilController implements Serializable, ErrorController {
 		return responseUbicacion;
 	}
 
-//	@SuppressWarnings("finally")
 	@PostMapping(value = "/saveData/")
 	@ApiOperation(value = "Guardar los datos del movil de la app de renagro", response = String.class)
 	public Object SaveDataMovil(@RequestBody String data, @RequestHeader(name = "Authorization") String token)
@@ -123,15 +122,10 @@ public class StageMovilController implements Serializable, ErrorController {
 
 		// EXTRACCION DE VALORES INDEPENDIENTES RECIBIDOS
 		String jsonData = getValueKeyJsonObject.checkKey(JsonData, "staBoleta").toString();
-
-//		JSONObject paramJsonData = new JSONObject(jsonData);
-//		String paramImg1 = getValueKeyJsonObject.checkKey(JsonData, "varImage1").toString();
-//		String paramImg2 = getValueKeyJsonObject.checkKey(JsonData, "varImage2").toString();
-//		String paramImg3 = getValueKeyJsonObject.checkKey(JsonData, "varImage3").toString();
-//		String paramDNI = getValueKeyJsonObject.checkKey(JsonData, "dni").toString();
 		String id = getValueKeyJsonObject.checkKey(JsonData, "id").toString();
 
-		// ENVIAR LA TRAMA COMPLETA A LA TABLA DE BACKUP DEL STAGE
+		// ENVIAR LA TRAMA COMPLETA A LA TABLA DE TRAMA COMPLETA QUE SIRVE DE BACKUP AL
+		// STAGE
 		String pathMicroTramaCompleta = urlServidor + urlMicroStageRenagro + "tramaCompleta/create/";
 		JsonDataBK.put("staId", id);
 		JsonDataBK.put("trcTrama", JsonData.toString());
@@ -140,17 +134,6 @@ public class StageMovilController implements Serializable, ErrorController {
 		// VARIABLES DE APOYO
 		String staExcepcion = null;
 		Long staEstadoProcesamiento = (long) 1;
-		ResponseSaveRenagroDTO responseDTO = null;
-
-//		JsonDataWithStatus jdStatus = new JsonDataWithStatus();
-//		jdStatus = gestionarJsonData.gestionarJsonData(paramJsonData, paramImg1, paramImg2, paramImg3, paramDNI);
-//		if (jdStatus.getStatus() == null) {
-//			staEstadoProcesamiento = (long) 1;
-//			staExcepcion = jdStatus.getStatus();
-//		} else {
-//			staExcepcion = jdStatus.getStatus();
-//			staEstadoProcesamiento = (long) 4;
-//		}
 
 		JsonData.remove("staBoleta");
 //		JsonData.put("staBoleta", jdStatus.getJsonData().toString());
@@ -162,28 +145,9 @@ public class StageMovilController implements Serializable, ErrorController {
 		JsonData.put("staEstadoProcesamiento", staEstadoProcesamiento);
 
 		String pathMicroStage = urlServidor + urlMicroStageRenagro + "stage/create/";
-
-//		System.out.println("====> staEstadoProcesamiento<==== :" + staEstadoProcesamiento);
-//		if (staEstadoProcesamiento == 1) {
-		responseDTO = convertEntityUtil.ConvertSingleEntityPOST(pathMicroStage, JsonData.toString(), token,
-				ResponseSaveRenagroDTO.class);
-//		String pathProcesamientoPHP = urlProcesamiento + "renagroprocesadatosmovil/procesaDatosMovil/"
-//				+ responseDTO.getId();
-//		try {
-//			consumer.doGet(pathProcesamientoPHP, "");
-//		} catch (Exception e) {
-		// TODO: handle exception
-//			e.printStackTrace();
-//		}
+		ResponseSaveRenagroDTO responseDTO = convertEntityUtil.ConvertSingleEntityPOST(pathMicroStage,
+				JsonData.toString(), token, ResponseSaveRenagroDTO.class);
 		return responseDTO;
-
-//		} else {
-//			responseDTO = convertEntityUtil.ConvertSingleEntityPOST(pathMicro, JsonData.toString(), token,
-//					ResponseSaveRenagroDTO.class);
-//			System.out.println("=== SAVE FINISHED NO ENVIO A PHP  ===" + id);
-//			return responseDTO;
-//		}
-
 	}
 
 	@SuppressWarnings("unchecked")
