@@ -15,7 +15,6 @@ despliegue_pruebas:
     - shell
   only:
     - desarrollo
-
 despliegue_produccion:
   stage: despliegue
   allow_failure: false
