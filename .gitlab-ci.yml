@@ -10,9 +10,7 @@ despliegue_pruebas:
   script:
     - mvn clean install
     - mvn install -DSkiptests
-    - /opt/wildfly/bin/jboss-cli.sh --connect --controller=10.10.1.121:9990  --user=$PRUEBAS_USUARIO_WILDFLY --password=$PRUEBAS_PASSWORD_WILDFLY & pwd
- #   - deploy target/stage_movil_renagro-0.0.1.war --force
-    - pwd
+    - /opt/wildfly/bin/jboss-cli.sh --connect --controller=10.10.1.121:9990  --user=$PRUEBAS_USUARIO_WILDFLY --password=$PRUEBAS_PASSWORD_WILDFLY --command="deploy target/stage_movil_renagro-0.0.1.war --force"
   tags:
     - shell
   only:
