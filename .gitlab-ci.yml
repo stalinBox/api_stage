@@ -1,8 +1,5 @@
 stages:
   - despliegue
-# variables:
-#  TEST: "HELLO WORLD"  
-
 
 despliegue_pruebas:
   stage: despliegue
@@ -15,14 +12,14 @@ despliegue_pruebas:
     - shell
   only:
     - pruebas
+
 despliegue_produccion:
   stage: despliegue
   allow_failure: false
   script:
-    - npm install
-    - ng build --prod  --base-href=/pruebas/calculadoracostosleche/
-    - rm -rf /mnt/servidor_produccion/calculadoracostosleche/
-    - mv dist/calculadora /mnt/servidor_produccion/calculadoracostosleche
+    - mvn clean install
+    - mvn install -DSkiptests
+    - /opt/wildfly/bin/jboss-cli.sh --connect --controller=192.168.1.20:9990  --user=$PRODUCCION_USUARIO_WILDFLY --password=$PRODUCCION_PASSWORD_WILDFLY --command="deploy target/stage_movil_renagro-0.0.1.war --force"
   tags:
     - shell
   only:
