@@ -14,7 +14,7 @@ despliegue_pruebas:
   tags:
     - shell
   only:
-    - desarrollo
+    - pruebas
 despliegue_produccion:
   stage: despliegue
   allow_failure: false
