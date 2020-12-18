@@ -33,6 +33,7 @@ import ec.gob.mag.stageRenagro.dto.ResponseDTO;
 import ec.gob.mag.stageRenagro.dto.ResponseSaveRenagroDTO;
 import ec.gob.mag.stageRenagro.dto.SectorDispersoDTO;
 import ec.gob.mag.stageRenagro.dto.SectorDispersoPeriodoDTO;
+import ec.gob.mag.stageRenagro.dto.StageDTO;
 import ec.gob.mag.stageRenagro.dto.UsuarioDTO;
 import ec.gob.mag.stageRenagro.dto.UsuarioPerfilDTO;
 import ec.gob.mag.stageRenagro.dto.UsuarioPersonaDTO;
@@ -115,21 +116,25 @@ public class StageMovilController implements Serializable, ErrorController {
 
 	@PostMapping(value = "/saveData/")
 	@ApiOperation(value = "Guardar los datos del movil de la app de renagro", response = String.class)
-	public Object SaveDataMovil(@RequestBody String data, @RequestHeader(name = "Authorization") String token)
-			throws Throwable {
+	public Object SaveDataMovil(@RequestBody String data, @RequestHeader(name = "Authorization") String token) {
+
 		JSONObject JsonData = new JSONObject(data);
 		JSONObject JsonDataBK = new JSONObject();
 
 		// EXTRACCION DE VALORES INDEPENDIENTES RECIBIDOS
 		String jsonData = getValueKeyJsonObject.checkKey(JsonData, "staBoleta").toString();
 		String id = getValueKeyJsonObject.checkKey(JsonData, "id").toString();
-
+		String usupIdInsert = getValueKeyJsonObject.checkKey(JsonData, "usupIdInsert").toString();
 		// ENVIAR LA TRAMA COMPLETA A LA TABLA DE TRAMA COMPLETA QUE SIRVE DE BACKUP AL
 		// STAGE
 		String pathMicroTramaCompleta = urlServidor + urlMicroStageRenagro + "tramaCompleta/create/";
 		JsonDataBK.put("staId", id);
 		JsonDataBK.put("trcTrama", JsonData.toString());
-		consumer.doPost(pathMicroTramaCompleta, JsonDataBK.toString(), token);
+		try {
+			consumer.doPost(pathMicroTramaCompleta, JsonDataBK.toString(), token);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 
 		// VARIABLES DE APOYO
 		String staExcepcion = null;
@@ -145,9 +150,35 @@ public class StageMovilController implements Serializable, ErrorController {
 		JsonData.put("staEstadoProcesamiento", staEstadoProcesamiento);
 
 		String pathMicroStage = urlServidor + urlMicroStageRenagro + "stage/create/";
-		ResponseSaveRenagroDTO responseDTO = convertEntityUtil.ConvertSingleEntityPOST(pathMicroStage,
-				JsonData.toString(), token, ResponseSaveRenagroDTO.class);
-		return responseDTO;
+
+		String pathVerificadorMicroStage = urlServidor + urlMicroStageRenagro + "stage/findByUsupIdInsertAndstaIdMovil/"
+				+ usupIdInsert + "/" + id;
+
+		StageDTO verificadorStageDTO = null;
+		try {
+			verificadorStageDTO = convertEntityUtil.ConvertSingleEntityGET(pathVerificadorMicroStage, token,
+					StageDTO.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		if (verificadorStageDTO != null) {
+			ResponseSaveRenagroDTO responseDTO1 = new ResponseSaveRenagroDTO();
+			responseDTO1.setId(verificadorStageDTO.getId().toString());
+			responseDTO1.setEstado("Registro creado anteriormente");
+			return responseDTO1;
+		} else {
+			ResponseSaveRenagroDTO responseDTO2 = new ResponseSaveRenagroDTO();
+			try {
+				responseDTO2 = convertEntityUtil.ConvertSingleEntityPOST(pathMicroStage, JsonData.toString(), token,
+						ResponseSaveRenagroDTO.class);
+			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException
+					| IOException e) {
+				e.printStackTrace();
+			}
+			return responseDTO2;
+		}
+
 	}
 
 	@SuppressWarnings("unchecked")
