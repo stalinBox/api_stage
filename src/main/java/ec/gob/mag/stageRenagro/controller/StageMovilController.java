@@ -165,7 +165,7 @@ public class StageMovilController implements Serializable, ErrorController {
 		if (verificadorStageDTO != null) {
 			ResponseSaveRenagroDTO responseDTO1 = new ResponseSaveRenagroDTO();
 			responseDTO1.setId(verificadorStageDTO.getId().toString());
-			responseDTO1.setEstado("Registro creado anteriormente");
+			responseDTO1.setEstado("CREADO");
 			return responseDTO1;
 		} else {
 			ResponseSaveRenagroDTO responseDTO2 = new ResponseSaveRenagroDTO();
