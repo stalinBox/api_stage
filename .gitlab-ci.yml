@@ -10,6 +10,7 @@ despliegue_pruebas:
     - /opt/wildfly/bin/jboss-cli.sh --connect --controller=10.10.1.121:9990  --user=$WILDFLY_PRUEBAS_USUARIO --password=$WILDFLY_PRUEBAS_PASSWORD --command="deploy target/stage_movil_renagro-0.0.1.war --force"
   tags:
     - shell
+    - wildfly
   only:
     - pruebas
 
@@ -22,5 +23,6 @@ despliegue_produccion:
     - /opt/wildfly/bin/jboss-cli.sh --connect --controller=192.168.1.20:9990  --user=$WILDFLY_PRODUCCION_USUARIO --password=$WILDFLY_PRODUCCION_PASSWORD --command="deploy target/stage_movil_renagro-0.0.1.war --force"
   tags:
     - shell
+    - wildfly
   only:
     - master
