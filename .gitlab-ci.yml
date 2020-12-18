@@ -1,13 +1,18 @@
 stages:
   - despliegue
 
+variables:
+#se debe colocar el nombre del war resultante miartefacto.war
+  NOMBRE_WAR: "stage_movil_renagro-0.0.1.war"
+
+
 despliegue_pruebas:
   stage: despliegue
   allow_failure: false
   script:
     - mvn clean install
     - mvn install -DSkiptests
-    - /opt/wildfly/bin/jboss-cli.sh --connect --controller=10.10.1.121:9990  --user=$WILDFLY_PRUEBAS_USUARIO --password=$WILDFLY_PRUEBAS_PASSWORD --command="deploy target/stage_movil_renagro-0.0.1.war --force"
+    - /opt/wildfly/bin/jboss-cli.sh --connect --controller=10.10.1.121:9990  --user=$WILDFLY_PRUEBAS_USUARIO --password=$WILDFLY_PRUEBAS_PASSWORD --command="deploy target/$NOMBRE_WAR --force"
   tags:
     - shell
     - wildfly
@@ -20,7 +25,7 @@ despliegue_produccion:
   script:
     - mvn clean install
     - mvn install -DSkiptests
-    - /opt/wildfly/bin/jboss-cli.sh --connect --controller=192.168.1.20:9990  --user=$WILDFLY_PRODUCCION_USUARIO --password=$WILDFLY_PRODUCCION_PASSWORD --command="deploy target/stage_movil_renagro-0.0.1.war --force"
+    - /opt/wildfly/bin/jboss-cli.sh --connect --controller=192.168.1.20:9990  --user=$WILDFLY_PRODUCCION_USUARIO --password=$WILDFLY_PRODUCCION_PASSWORD --command="deploy target/$NOMBRE_WAR --force"
   tags:
     - shell
     - wildfly
