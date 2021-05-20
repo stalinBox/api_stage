@@ -82,8 +82,8 @@ public class StageMovilController implements Serializable, ErrorController {
 	@Value("${url.servidor_micro}")
 	private String urlServidor;
 
-	@Value("${url.renagroProcesamiento}")
-	private String urlProcesamiento;
+//	@Value("${url.renagroProcesamiento}")
+//	private String urlProcesamiento;
 
 	@Value("${url.renagro}")
 	private String urlMicroRenagro;
